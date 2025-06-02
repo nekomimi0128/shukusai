@@ -4,242 +4,229 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>オリオン連絡帳 - SHUKUSAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * {
+        :root {
+            --primary: #5568FE;
+            --secondary: #FFA500;
+            --danger: #FF5A5F;
+            --background: #F6F7FB;
+            --white: #fff;
+            --shadow: 0 6px 32px rgba(80, 98, 192, 0.09);
+            --radius: 18px;
+        }
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
-
         body {
-            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Roboto', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
         }
-
         .container {
             max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 40px auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
         }
-
         .header {
-            background: linear-gradient(45deg, #ff6b6b, #ffa500);
-            color: white;
-            padding: 30px;
+            background: linear-gradient(90deg, #5568FE, #FFA500 70%);
+            color: var(--white);
+            padding: 38px 24px 24px 24px;
             text-align: center;
+            position: relative;
         }
-
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2.6rem;
+            letter-spacing: 0.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.08);
         }
-
         .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.15rem;
+            opacity: 0.95;
+            font-weight: 400;
         }
-
+        .logout-btn {
+            position: absolute;
+            top: 18px;
+            right: 25px;
+            background: rgba(255,255,255,0.16);
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.26);
+            padding: 10px 18px;
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background .2s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.33); }
         .login-screen, .admin-screen, .parent-screen {
-            padding: 40px;
+            padding: 48px 18px;
         }
-
         .login-form {
             max-width: 400px;
             margin: 0 auto;
+            background: var(--background);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(85,104,254,0.07);
+            padding: 35px 30px 30px 30px;
         }
-
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
-
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             font-weight: 600;
-            color: #333;
+            color: #32425C;
+            font-size: 1.05em;
         }
-
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 13px 15px;
             border: 2px solid #e1e5e9;
-            border-radius: 10px;
+            border-radius: 11px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            background: #fafdff;
+            transition: border-color 0.2s;
         }
-
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #667eea;
+            border-color: var(--primary);
             outline: none;
         }
-
         .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(90deg, var(--primary), #7c5dfa);
+            color: var(--white);
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
+            padding: 13px 36px;
+            border-radius: 30px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.13s, box-shadow 0.14s;
+            box-shadow: 0 2px 8px rgba(85,104,254,0.08);
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
+        .btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 4px 16px rgba(85,104,254,0.12);}
         .btn-secondary {
-            background: linear-gradient(45deg, #ffa500, #ff6b6b);
+            background: linear-gradient(90deg, var(--secondary), #fd7d3b);
         }
-
         .btn-danger {
-            background: linear-gradient(45deg, #ff4757, #ff3838);
+            background: linear-gradient(90deg, var(--danger), #ff7a5f);
         }
-
         .btn-small {
             padding: 8px 20px;
-            font-size: 14px;
+            font-size: 15px;
+            border-radius: 20px;
         }
-
         .admin-nav {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 32px;
             flex-wrap: wrap;
         }
-
-        .child-list {
-            background: #f8f9fa;
+        .admin-nav .btn { min-width: 120px; }
+        .child-list, .contact-form {
+            background: var(--background);
             border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 28px 22px 18px 22px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 4px rgba(85,104,254,0.04);
         }
-
         .child-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: white;
+            padding: 13px 0;
+            background: var(--white);
             border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 7px;
+            box-shadow: 0 1px 7px rgba(85,104,254,0.05);
         }
-
-        .contact-form {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 22px;
             margin-bottom: 20px;
         }
-
-        .form-full {
-            grid-column: 1 / -1;
-        }
-
+        .form-full { grid-column: 1 / -1; }
         .checkbox-group {
             display: flex;
-            gap: 20px;
+            gap: 22px;
             flex-wrap: wrap;
         }
-
         .checkbox-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
         .checkbox-item input[type="checkbox"] {
             width: auto;
             margin: 0;
         }
-
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
         .records-list {
-            margin-top: 30px;
+            margin-top: 36px;
         }
-
         .record-item {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: var(--white);
+            border-radius: 11px;
+            padding: 23px 18px 17px 18px;
+            margin-bottom: 19px;
+            box-shadow: 0 2px 9px rgba(85,104,254,0.07);
+            border-left: 5px solid var(--primary);
+            position: relative;
+            transition: box-shadow .18s;
         }
-
+        .record-item:hover { box-shadow: 0 7px 24px rgba(85,104,254,0.13);}
         .record-date {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.18em;
         }
-
         .record-section {
-            margin-bottom: 15px;
+            margin-bottom: 11px;
         }
-
         .record-section h4 {
-            color: #333;
-            margin-bottom: 8px;
+            color: #4c5d7a;
+            margin-bottom: 2px;
             font-size: 14px;
+            font-weight: 700;
         }
-
         .record-content {
-            color: #666;
-            font-size: 14px;
+            color: #495066;
+            font-size: 14.3px;
+            line-height: 1.6;
         }
-
-        .hidden {
-            display: none;
+        .reply-section {
+            background: #f2f7ff;
+            border-radius: 8px;
+            padding: 10px 12px 8px 12px;
+            margin-top: 13px;
         }
-
+        .reply-title { font-size: 13px; color: var(--primary); font-weight: 700;}
+        .hidden { display: none; }
         .error-msg {
-            color: #ff4757;
+            color: var(--danger);
             text-align: center;
             margin-top: 10px;
         }
-
+        textarea {
+            font-family: inherit;
+            min-height: 38px;
+            resize: vertical;
+        }
         @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .checkbox-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .admin-nav {
-                flex-direction: column;
-            }
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-group { flex-direction: column; gap: 12px; }
+            .admin-nav { flex-direction: column; gap: 10px; }
+            .container { margin: 0; border-radius: 0; }
+            .header { padding: 27px 8px 18px 8px; }
         }
     </style>
 </head>
@@ -256,11 +243,11 @@
             <div class="login-form">
                 <div class="form-group">
                     <label for="userId">ユーザーID</label>
-                    <input type="text" id="userId" placeholder="ユーザーIDを入力してください">
+                    <input type="text" id="userId" placeholder="ユーザーIDを入力してください" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="password">パスワード</label>
-                    <input type="password" id="password" placeholder="パスワードを入力してください">
+                    <input type="password" id="password" placeholder="パスワードを入力してください" autocomplete="current-password">
                 </div>
                 <div class="form-group">
                     <button class="btn" onclick="login()" style="width: 100%;">ログイン</button>
@@ -283,7 +270,7 @@
                 <div class="child-list">
                     <h3>登録児童一覧</h3>
                     <div id="childList"></div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: flex; gap:9px; margin-top: 14px;">
                         <input type="text" id="newChildName" placeholder="新しい児童名を入力">
                         <button class="btn btn-secondary" onclick="addChild()">児童追加</button>
                     </div>
@@ -322,11 +309,10 @@
             </div>
         </div>
 
-        <!-- 保護者画面 -->
+        <!-- 保護者画面（管理者も児童ごとに利用可能） -->
         <div id="parentScreen" class="parent-screen hidden">
             <h2 id="parentChildName">児童名</h2>
-            
-            <div class="contact-form">
+            <div class="contact-form" id="parentInputForm">
                 <h3>今日の記録を入力</h3>
                 <div class="form-row">
                     <div class="form-group">
@@ -338,7 +324,6 @@
                         <input type="number" id="morningTemp" step="0.1" placeholder="36.5">
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>夜の体温 (℃)</label>
@@ -349,7 +334,6 @@
                         <input type="number" id="bowelCount" min="0" placeholder="0">
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>排尿回数</label>
@@ -360,7 +344,6 @@
                         <input type="text" id="breakfast" placeholder="パン、牛乳など">
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>昼ご飯</label>
@@ -371,12 +354,10 @@
                         <input type="text" id="dinner" placeholder="カレー、サラダなど">
                     </div>
                 </div>
-
                 <div class="form-group form-full">
                     <label>服薬</label>
                     <input type="text" id="medication" placeholder="薬の名前、時間など">
                 </div>
-
                 <div class="form-group form-full">
                     <label>ケアチェック</label>
                     <div class="checkbox-group">
@@ -394,55 +375,48 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group form-full">
                     <label>連絡事項</label>
                     <textarea id="notes" rows="4" placeholder="その他の連絡事項があれば記入してください"></textarea>
                 </div>
-
                 <button class="btn" onclick="saveRecord()" style="width: 100%;">記録を保存</button>
             </div>
-
             <div class="records-list">
                 <h3>過去の記録</h3>
                 <div id="recordsList"></div>
             </div>
         </div>
     </div>
-
     <script>
-        // データ管理（実際の運用ではサーバーサイドで管理）
+        // データ管理
         let users = {
             'admin': { password: 'admin123', type: 'admin', childId: null },
             'parent1': { password: 'pass123', type: 'parent', childId: 'child1' }
         };
-
         let children = {
             'child1': { name: '田中太郎', id: 'child1' }
         };
-
         let records = {};
-
         let currentUser = null;
+        // 管理者が記録入力する児童ID（保護者画面表示用）
+        let adminInputChildId = null;
 
-        // 初期化
-        document.getElementById('recordDate').valueAsDate = new Date();
+        if (document.getElementById('recordDate')) {
+            document.getElementById('recordDate').valueAsDate = new Date();
+        }
 
         function login() {
             const userId = document.getElementById('userId').value;
             const password = document.getElementById('password').value;
-            
             if (users[userId] && users[userId].password === password) {
                 currentUser = userId;
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.querySelector('.logout-btn').classList.remove('hidden');
-                
                 if (users[userId].type === 'admin') {
                     showAdminScreen();
                 } else {
                     showParentScreen();
                 }
-                
                 document.getElementById('loginError').classList.add('hidden');
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
@@ -451,27 +425,44 @@
 
         function logout() {
             currentUser = null;
+            adminInputChildId = null;
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('adminScreen').classList.add('hidden');
             document.getElementById('parentScreen').classList.add('hidden');
             document.querySelector('.logout-btn').classList.add('hidden');
-            
-            // フォームリセット
             document.getElementById('userId').value = '';
             document.getElementById('password').value = '';
         }
 
         function showAdminScreen() {
             document.getElementById('adminScreen').classList.remove('hidden');
+            document.getElementById('parentScreen').classList.add('hidden');
+            adminInputChildId = null;
             showChildManagement();
         }
 
         function showParentScreen() {
             document.getElementById('parentScreen').classList.remove('hidden');
+            document.getElementById('adminScreen').classList.add('hidden');
+            adminInputChildId = null;
             const childId = users[currentUser].childId;
             const childName = children[childId].name;
             document.getElementById('parentChildName').textContent = `${childName}さんの記録`;
+            document.getElementById('parentInputForm').style.display = 'none';
+            if (users[currentUser].type === 'parent') {
+                document.getElementById('parentInputForm').style.display = '';
+            }
             loadRecords();
+        }
+
+        // 管理者が特定児童の記録入力画面を開く
+        function showParentScreenFor(childId) {
+            document.getElementById('parentScreen').classList.remove('hidden');
+            document.getElementById('adminScreen').classList.add('hidden');
+            adminInputChildId = childId;
+            document.getElementById('parentChildName').textContent = `${children[childId].name}さんの記録`;
+            document.getElementById('parentInputForm').style.display = '';
+            loadRecordsFor(childId);
         }
 
         function showChildManagement() {
@@ -480,40 +471,34 @@
             document.getElementById('allRecords').classList.add('hidden');
             updateChildList();
         }
-
         function showUserManagement() {
             document.getElementById('childManagement').classList.add('hidden');
             document.getElementById('userManagement').classList.remove('hidden');
             document.getElementById('allRecords').classList.add('hidden');
             updateChildSelect();
         }
-
         function showAllRecords() {
             document.getElementById('childManagement').classList.add('hidden');
             document.getElementById('userManagement').classList.add('hidden');
             document.getElementById('allRecords').classList.remove('hidden');
             loadAllRecords();
         }
-
         function updateChildList() {
             const childList = document.getElementById('childList');
             childList.innerHTML = '';
-            
             Object.values(children).forEach(child => {
+                let btnHtml = `<button class="btn btn-danger btn-small" onclick="removeChild('${child.id}')">削除</button>`;
+                // 管理者用：記録入力ボタン
+                btnHtml += ` <button class="btn btn-secondary btn-small" onclick="showParentScreenFor('${child.id}')">記録入力</button>`;
                 const item = document.createElement('div');
                 item.className = 'child-item';
-                item.innerHTML = `
-                    <span>${child.name}</span>
-                    <button class="btn btn-danger btn-small" onclick="removeChild('${child.id}')">削除</button>
-                `;
+                item.innerHTML = `<span>${child.name}</span>${btnHtml}`;
                 childList.appendChild(item);
             });
         }
-
         function updateChildSelect() {
             const select = document.getElementById('assignChild');
             select.innerHTML = '<option value="">児童を選択してください</option>';
-            
             Object.values(children).forEach(child => {
                 const option = document.createElement('option');
                 option.value = child.id;
@@ -521,7 +506,6 @@
                 select.appendChild(option);
             });
         }
-
         function addChild() {
             const name = document.getElementById('newChildName').value.trim();
             if (name) {
@@ -531,38 +515,34 @@
                 updateChildList();
             }
         }
-
         function removeChild(childId) {
             if (confirm('この児童を削除してもよろしいですか？')) {
                 delete children[childId];
                 updateChildList();
             }
         }
-
         function addUser() {
             const userId = document.getElementById('newUserId').value.trim();
             const password = document.getElementById('newUserPassword').value.trim();
             const childId = document.getElementById('assignChild').value;
-            
             if (userId && password && childId) {
                 users[userId] = {
                     password,
                     type: 'parent',
                     childId
                 };
-                
                 document.getElementById('newUserId').value = '';
                 document.getElementById('newUserPassword').value = '';
                 document.getElementById('assignChild').value = '';
-                
                 alert('ユーザーが追加されました');
             }
         }
-
         function saveRecord() {
-            const childId = users[currentUser].childId;
+            // 管理者はadminInputChildId、保護者は自分のchildId
+            const childId = (users[currentUser].type === 'admin' && adminInputChildId)
+                ? adminInputChildId
+                : users[currentUser].childId;
             const date = document.getElementById('recordDate').value;
-            
             const record = {
                 date,
                 morningTemp: document.getElementById('morningTemp').value,
@@ -579,14 +559,8 @@
                 notes: document.getElementById('notes').value,
                 timestamp: new Date().toISOString()
             };
-            
-            if (!records[childId]) {
-                records[childId] = {};
-            }
-            
+            if (!records[childId]) { records[childId] = {}; }
             records[childId][date] = record;
-            
-            // フォームリセット
             document.querySelectorAll('#parentScreen input, #parentScreen textarea').forEach(input => {
                 if (input.type === 'checkbox') {
                     input.checked = false;
@@ -594,23 +568,70 @@
                     input.value = '';
                 }
             });
-            
             alert('記録が保存されました');
-            loadRecords();
+            if (users[currentUser].type === 'admin' && adminInputChildId) {
+                loadRecordsFor(adminInputChildId);
+            } else {
+                loadRecords();
+            }
         }
-
+        // 保護者の返信保存
+        function saveReply(childId, date) {
+            const replyInput = document.getElementById(`replyInput-${date}`);
+            const reply = replyInput.value.trim();
+            if (reply !== '') {
+                if (!records[childId][date].reply) records[childId][date].reply = {};
+                records[childId][date].reply[currentUser] = reply;
+                replyInput.value = '';
+                if (users[currentUser].type === 'admin' && adminInputChildId) {
+                    loadRecordsFor(adminInputChildId);
+                } else {
+                    loadRecords();
+                }
+            }
+        }
         function loadRecords() {
             const childId = users[currentUser].childId;
+            _loadRecordsBase(childId, false);
+        }
+        function loadRecordsFor(childId) {
+            _loadRecordsBase(childId, true);
+        }
+        function _loadRecordsBase(childId, isAdminView) {
             const recordsList = document.getElementById('recordsList');
             recordsList.innerHTML = '';
-            
             if (records[childId]) {
                 const sortedDates = Object.keys(records[childId]).sort().reverse();
-                
                 sortedDates.forEach(date => {
                     const record = records[childId][date];
                     const item = document.createElement('div');
                     item.className = 'record-item';
+                    let replySection = '';
+                    const isAdmin = users[currentUser].type === 'admin';
+                    // 保護者：返信入力欄
+                    if (!isAdmin || isAdminView) {
+                        const currentReply = (record.reply && record.reply[currentUser]) || '';
+                        replySection = `
+                            <div class="reply-section">
+                                <div class="reply-title">返信</div>
+                                <textarea id="replyInput-${date}" rows="2" placeholder="コメント・返信を入力">${currentReply}</textarea>
+                                <button class="btn btn-small" onclick="saveReply('${childId}','${date}')">送信</button>
+                            </div>
+                        `;
+                        // 他の保護者の返信表示（自分以外）
+                        if (record.reply) {
+                            Object.entries(record.reply).forEach(([uid, val]) => {
+                                if(uid !== currentUser)
+                                replySection += `<div class="reply-section"><div class="reply-title">他保護者の返信（${uid}）</div><div class="record-content">${val}</div></div>`;
+                            });
+                        }
+                    }
+                    // 管理者：全員の返信一覧（通常の管理者画面の時のみ）
+                    if (isAdmin && !isAdminView && record.reply) {
+                        replySection = Object.entries(record.reply).map(([uid, val]) =>
+                            `<div class="reply-section"><div class="reply-title">返信（${uid}）</div><div class="record-content">${val}</div></div>`
+                        ).join('');
+                    }
                     item.innerHTML = `
                         <div class="record-date">${date}</div>
                         <div class="record-section">
@@ -639,30 +660,32 @@
                         </div>
                         ${record.medication ? `<div class="record-section"><h4>服薬</h4><div class="record-content">${record.medication}</div></div>` : ''}
                         ${record.notes ? `<div class="record-section"><h4>連絡事項</h4><div class="record-content">${record.notes}</div></div>` : ''}
+                        ${replySection}
                     `;
                     recordsList.appendChild(item);
                 });
             }
         }
-
         function loadAllRecords() {
             const allRecordsList = document.getElementById('allRecordsList');
             allRecordsList.innerHTML = '';
-            
             Object.keys(records).forEach(childId => {
                 const childName = children[childId]?.name || '不明';
                 const childRecords = records[childId];
-                
                 const childSection = document.createElement('div');
                 childSection.innerHTML = `<h3>${childName}さんの記録</h3>`;
                 allRecordsList.appendChild(childSection);
-                
                 const sortedDates = Object.keys(childRecords).sort().reverse();
-                
                 sortedDates.forEach(date => {
                     const record = childRecords[date];
                     const item = document.createElement('div');
                     item.className = 'record-item';
+                    let replySection = '';
+                    if (record.reply) {
+                        replySection = Object.entries(record.reply).map(([uid, val]) =>
+                            `<div class="reply-section"><div class="reply-title">返信（${uid}）</div><div class="record-content">${val}</div></div>`
+                        ).join('');
+                    }
                     item.innerHTML = `
                         <div class="record-date">${date}</div>
                         <div class="record-section">
@@ -691,18 +714,18 @@
                         </div>
                         ${record.medication ? `<div class="record-section"><h4>服薬</h4><div class="record-content">${record.medication}</div></div>` : ''}
                         ${record.notes ? `<div class="record-section"><h4>連絡事項</h4><div class="record-content">${record.notes}</div></div>` : ''}
+                        ${replySection}
                     `;
                     allRecordsList.appendChild(item);
                 });
             });
         }
-
-        // Enterキーでログイン
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
                 login();
             }
         });
+        window.saveReply = saveReply;
     </script>
 </body>
 </html>
