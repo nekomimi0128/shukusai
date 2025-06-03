@@ -1,149 +1,656 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>きらり連絡帳 - ログイン・ユーザー管理</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body { font-family: sans-serif; background: #faf6ee; color: #333; margin: 0; padding: 2em;}
-    h1, h2 { color: #624e2e; }
-    .box { background: #fff; border-radius: 8px; padding: 2em; max-width: 400px; margin: 2em auto; box-shadow: 0 0 10px #0001;}
-    form { display: flex; flex-direction: column; gap: 1em;}
-    label { display: flex; flex-direction: column; font-weight: bold;}
-    input, select { padding: .5em; border-radius: 4px; border: 1px solid #ccc;}
-    button { padding: .7em 1.5em; background: #e0c89e; color: #333; border: none; border-radius: 4px; cursor: pointer;}
-    button:hover { background: #c2a978;}
-    .users-list { margin-top: 2em;}
-    table { width: 100%; border-collapse: collapse;}
-    th, td { padding: .5em; border: 1px solid #ccc;}
-    .msg { color: #e00; margin: .5em 0;}
-    .success { color: #285; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>きらり連絡帳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5568FE;
+            --secondary: #FFA500;
+            --danger: #FF5A5F;
+            --background: #F6F7FB;
+            --white: #fff;
+            --shadow: 0 6px 32px rgba(80, 98, 192, 0.09);
+            --radius: 18px;
+        }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: 'Roboto', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(90deg, #5568FE, #FFA500 70%);
+            color: var(--white);
+            padding: 38px 24px 24px 24px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2.6rem;
+            letter-spacing: 0.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.08);
+        }
+        .subtitle { font-size: 1.15rem; opacity: 0.95; font-weight: 400; }
+        .logout-btn {
+            position: absolute; top: 18px; right: 25px;
+            background: rgba(255,255,255,0.16); color: var(--white);
+            border: 1px solid rgba(255,255,255,0.26);
+            padding: 10px 18px; border-radius: 22px; cursor: pointer;
+            font-size: 15px; transition: background .2s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.33); }
+        .screen { padding: 48px 18px; }
+        .hidden { display: none; }
+        .login-form, .child-list, .contact-form {
+            background: var(--background);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(85,104,254,0.07);
+            padding: 35px 30px 30px 30px;
+            margin-bottom: 32px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; margin-bottom: 7px; font-weight: 600; color: #32425C; font-size: 1.05em; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 13px 15px; border: 2px solid #e1e5e9;
+            border-radius: 11px; font-size: 16px; background: #fafdff;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary); outline: none;
+        }
+        .btn {
+            background: linear-gradient(90deg, var(--primary), #7c5dfa);
+            color: var(--white); border: none; padding: 13px 36px;
+            border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: transform 0.13s, box-shadow 0.14s;
+            box-shadow: 0 2px 8px rgba(85,104,254,0.08);
+        }
+        .btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 4px 16px rgba(85,104,254,0.12);}
+        .btn-secondary { background: linear-gradient(90deg, var(--secondary), #fd7d3b); }
+        .btn-danger { background: linear-gradient(90deg, var(--danger), #ff7a5f); }
+        .btn-small { padding: 8px 20px; font-size: 15px; border-radius: 20px; }
+        .admin-nav {
+            display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap;
+        }
+        .admin-nav .btn { min-width: 120px; }
+        .child-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 13px 0; background: var(--white); border-radius: 10px;
+            margin-bottom: 7px; box-shadow: 0 1px 7px rgba(85,104,254,0.05);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 20px; }
+        .form-full { grid-column: 1 / -1; }
+        .checkbox-group { display: flex; gap: 22px; flex-wrap: wrap; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
+        .records-list { margin-top: 36px; }
+        .record-item {
+            background: var(--white); border-radius: 11px; padding: 23px 18px 17px 18px;
+            margin-bottom: 19px; box-shadow: 0 2px 9px rgba(85,104,254,0.07);
+            border-left: 5px solid var(--primary); position: relative; transition: box-shadow .18s;
+        }
+        .record-item:hover { box-shadow: 0 7px 24px rgba(85,104,254,0.13);}
+        .record-date { font-weight: 700; color: var(--primary); margin-bottom: 12px; font-size: 1.18em; }
+        .record-section { margin-bottom: 11px; }
+        .record-section h4 { color: #4c5d7a; margin-bottom: 2px; font-size: 14px; font-weight: 700; }
+        .record-content { color: #495066; font-size: 14.3px; line-height: 1.6; }
+        .reply-section {
+            background: #f2f7ff; border-radius: 8px; padding: 10px 12px 8px 12px; margin-top: 13px;
+        }
+        .reply-title { font-size: 13px; color: var(--primary); font-weight: 700;}
+        .error-msg { color: var(--danger); text-align: center; margin-top: 10px; }
+        textarea { font-family: inherit; min-height: 38px; resize: vertical; }
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-group { flex-direction: column; gap: 12px; }
+            .admin-nav { flex-direction: column; gap: 10px; }
+            .container { margin: 0; border-radius: 0; }
+            .header { padding: 27px 8px 18px 8px; }
+        }
+    </style>
 </head>
 <body>
-  <div class="box">
-    <h1>きらり連絡帳 ログイン</h1>
-    <form id="loginForm">
-      <label>
-        ユーザーID
-        <input type="text" id="loginId" required>
-      </label>
-      <label>
-        パスワード
-        <input type="password" id="loginPw" required>
-      </label>
-      <button type="submit">ログイン</button>
-      <div class="msg" id="loginMsg"></div>
-    </form>
-  </div>
+<div class="container">
+    <div class="header">
+        <button class="logout-btn hidden" onclick="logout()">ログアウト</button>
+        <h1>🌟 きらり連絡帳</h1>
+        <p class="subtitle">ショートステイ デジタル連絡帳システム</p>
+    </div>
+    <!-- ログイン画面 -->
+    <div id="loginScreen" class="screen">
+        <form class="login-form" onsubmit="login();return false;">
+            <div class="form-group">
+                <label for="userId">ユーザーID</label>
+                <input type="text" id="userId" placeholder="ユーザーIDを入力してください" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" placeholder="パスワードを入力してください" autocomplete="current-password" required>
+            </div>
+            <div class="form-group">
+                <button class="btn" type="submit" style="width: 100%;">ログイン</button>
+            </div>
+            <div id="loginError" class="error-msg hidden">ユーザーIDまたはパスワードが正しくありません</div>
+        </form>
+    </div>
+    <!-- 管理者画面 -->
+    <div id="adminScreen" class="screen hidden">
+        <div class="admin-nav">
+            <button class="btn" onclick="showChildManagement()">児童管理</button>
+            <button class="btn" onclick="showUserManagement()">ユーザー管理</button>
+            <button class="btn" onclick="showAllRecords()">全記録確認</button>
+        </div>
+        <!-- 児童管理 -->
+        <div id="childManagement">
+            <h2>児童管理</h2>
+            <div class="child-list">
+                <h3>登録児童一覧</h3>
+                <div id="childList"></div>
+                <div class="form-group" style="display: flex; gap:9px; margin-top: 14px;">
+                    <input type="text" id="newChildName" placeholder="新しい児童名を入力">
+                    <button class="btn btn-secondary" onclick="addChild()">児童追加</button>
+                </div>
+            </div>
+        </div>
+        <!-- ユーザー管理 -->
+        <div id="userManagement" class="hidden">
+            <h2>ユーザー管理</h2>
+            <div class="child-list">
+                <h3>保護者アカウント作成</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ユーザーID</label>
+                        <input type="text" id="newUserId" placeholder="新しいユーザーID">
+                    </div>
+                    <div class="form-group">
+                        <label>パスワード</label>
+                        <input type="password" id="newUserPassword" placeholder="パスワード">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>担当児童</label>
+                    <select id="assignChild">
+                        <option value="">児童を選択してください</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="addUser()">ユーザー追加</button>
+            </div>
+        </div>
+        <!-- 全記録確認 -->
+        <div id="allRecords" class="hidden">
+            <h2>全記録確認</h2>
+            <div id="allRecordsList"></div>
+        </div>
+    </div>
+    <!-- 保護者画面 -->
+    <div id="parentScreen" class="screen hidden">
+        <h2 id="parentChildName">児童名</h2>
+        <div class="contact-form" id="parentInputForm">
+            <h3>今日の記録を入力</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>日付</label>
+                    <input type="date" id="recordDate">
+                </div>
+                <div class="form-group">
+                    <label>朝の体温 (℃)</label>
+                    <input type="number" id="morningTemp" step="0.1" placeholder="36.5">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>夜の体温 (℃)</label>
+                    <input type="number" id="eveningTemp" step="0.1" placeholder="36.5">
+                </div>
+                <div class="form-group">
+                    <label>排便回数</label>
+                    <input type="number" id="bowelCount" min="0" placeholder="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>排尿回数</label>
+                    <input type="number" id="urinationCount" min="0" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>朝ご飯</label>
+                    <input type="text" id="breakfast" placeholder="パン、牛乳など">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>昼ご飯</label>
+                    <input type="text" id="lunch" placeholder="記入しない場合は空白のまま">
+                </div>
+                <div class="form-group">
+                    <label>夜ご飯</label>
+                    <input type="text" id="dinner" placeholder="カレー、サラダなど">
+                </div>
+            </div>
+            <div class="form-group form-full">
+                <label>服薬</label>
+                <input type="text" id="medication" placeholder="薬の名前、時間など">
+            </div>
+            <div class="form-group form-full">
+                <label>ケアチェック</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="toothBrush">
+                        <label for="toothBrush">歯磨きをした</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bath">
+                        <label for="bath">お風呂に入った</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="clothesChange">
+                        <label for="clothesChange">服を着替えた</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group form-full">
+                <label>連絡事項</label>
+                <textarea id="notes" rows="4" placeholder="その他の連絡事項があれば記入してください"></textarea>
+            </div>
+            <button class="btn" onclick="saveRecord()" style="width: 100%;">記録を保存</button>
+        </div>
+        <div class="records-list">
+            <h3>過去の記録</h3>
+            <div id="recordsList"></div>
+        </div>
+    </div>
+</div>
+<script>
+const API = 'http://localhost:3001/api';
 
-  <div class="box">
-    <h2>ユーザー新規登録</h2>
-    <form id="addUserForm">
-      <label>
-        ユーザーID
-        <input type="text" id="newUserId" required>
-      </label>
-      <label>
-        パスワード
-        <input type="password" id="newUserPw" required>
-      </label>
-      <label>
-        種別
-        <select id="newUserType" required>
-          <option value="parent">保護者</option>
-          <option value="admin">管理者</option>
-        </select>
-      </label>
-      <button type="submit">ユーザー追加</button>
-      <div class="msg" id="addUserMsg"></div>
-    </form>
-  </div>
+let currentUser = null;
+let currentUserObj = null;
+let adminInputChildId = null;
 
-  <div class="box users-list">
-    <h2>登録済みユーザー一覧</h2>
-    <table id="usersTable">
-      <thead>
-        <tr><th>ID</th><th>種別</th><th>紐付け児童</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+document.addEventListener('DOMContentLoaded', () => {
+    const recDate = document.getElementById('recordDate');
+    if (recDate) recDate.valueAsDate = new Date();
+});
 
-  <script>
-    // --- ログイン処理 ---
-    document.getElementById('loginForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const userId = document.getElementById('loginId').value.trim();
-      const password = document.getElementById('loginPw').value;
-      const msg = document.getElementById('loginMsg');
-      msg.textContent = '';
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({userId, password})
+function login() {
+    const userId = document.getElementById('userId').value;
+    const password = document.getElementById('password').value;
+    fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+    })
+    .then(data => {
+        currentUser = userId;
+        currentUserObj = data.user;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.querySelector('.logout-btn').classList.remove('hidden');
+        if (data.user.type === 'admin') {
+            showAdminScreen();
+        } else {
+            showParentScreen();
+        }
+        document.getElementById('loginError').classList.add('hidden');
+    })
+    .catch(() => {
+        document.getElementById('loginError').classList.remove('hidden');
+    });
+}
+function logout() {
+    currentUser = null;
+    currentUserObj = null;
+    adminInputChildId = null;
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('adminScreen').classList.add('hidden');
+    document.getElementById('parentScreen').classList.add('hidden');
+    document.querySelector('.logout-btn').classList.add('hidden');
+    document.getElementById('userId').value = '';
+    document.getElementById('password').value = '';
+}
+function showAdminScreen() {
+    document.getElementById('adminScreen').classList.remove('hidden');
+    document.getElementById('parentScreen').classList.add('hidden');
+    adminInputChildId = null;
+    showChildManagement();
+}
+function showParentScreen() {
+    document.getElementById('parentScreen').classList.remove('hidden');
+    document.getElementById('adminScreen').classList.add('hidden');
+    adminInputChildId = null;
+    fetch(`${API}/children`)
+    .then(res=>res.json())
+    .then(children=>{
+        const childId = currentUserObj.childId;
+        const childName = children[childId]?.name || "";
+        document.getElementById('parentChildName').textContent = `${childName}さんの記録`;
+        document.getElementById('parentInputForm').style.display = currentUserObj.type === 'parent' ? '' : 'none';
+        loadRecords();
+    });
+}
+function showParentScreenFor(childId) {
+    document.getElementById('parentScreen').classList.remove('hidden');
+    document.getElementById('adminScreen').classList.add('hidden');
+    adminInputChildId = childId;
+    fetch(`${API}/children`)
+    .then(res=>res.json())
+    .then(children=>{
+        document.getElementById('parentChildName').textContent = `${children[childId]?.name || ""}さんの記録`;
+        document.getElementById('parentInputForm').style.display = '';
+        loadRecordsFor(childId);
+    });
+}
+function showChildManagement() {
+    document.getElementById('childManagement').classList.remove('hidden');
+    document.getElementById('userManagement').classList.add('hidden');
+    document.getElementById('allRecords').classList.add('hidden');
+    updateChildList();
+}
+function showUserManagement() {
+    document.getElementById('childManagement').classList.add('hidden');
+    document.getElementById('userManagement').classList.remove('hidden');
+    document.getElementById('allRecords').classList.add('hidden');
+    updateChildSelect();
+}
+function showAllRecords() {
+    document.getElementById('childManagement').classList.add('hidden');
+    document.getElementById('userManagement').classList.add('hidden');
+    document.getElementById('allRecords').classList.remove('hidden');
+    loadAllRecords();
+}
+function updateChildList() {
+    fetch(`${API}/children`)
+    .then(res => res.json())
+    .then(children => {
+        const childList = document.getElementById('childList');
+        childList.innerHTML = '';
+        Object.values(children).forEach(child => {
+            let btnHtml = `<button class="btn btn-danger btn-small" onclick="removeChild('${child.id}')">削除</button>`;
+            btnHtml += ` <button class="btn btn-secondary btn-small" onclick="showParentScreenFor('${child.id}')">記録入力</button>`;
+            const item = document.createElement('div');
+            item.className = 'child-item';
+            item.innerHTML = `<span>${child.name}</span>${btnHtml}`;
+            childList.appendChild(item);
         });
-        if (!res.ok) throw new Error('ログインに失敗しました');
-        const data = await res.json();
-        msg.textContent = 'ログイン成功！';
-        msg.className = 'msg success';
-        // ここで画面遷移やトークン保存等を行ってもよい
-      } catch (err) {
-        msg.textContent = 'ログインに失敗しました';
-        msg.className = 'msg';
-      }
-    };
-
-    // --- ユーザー登録処理 ---
-    document.getElementById('addUserForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const userId = document.getElementById('newUserId').value.trim();
-      const password = document.getElementById('newUserPw').value;
-      const type = document.getElementById('newUserType').value;
-      const msg = document.getElementById('addUserMsg');
-      msg.textContent = '';
-      try {
-        const res = await fetch('/api/users', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({userId, password, type, childId: null})
+    });
+}
+function updateChildSelect() {
+    fetch(`${API}/children`)
+    .then(res => res.json())
+    .then(children => {
+        const select = document.getElementById('assignChild');
+        select.innerHTML = '<option value="">児童を選択してください</option>';
+        Object.values(children).forEach(child => {
+            const option = document.createElement('option');
+            option.value = child.id;
+            option.textContent = child.name;
+            select.appendChild(option);
         });
-        const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'ユーザー追加失敗');
-        msg.textContent = 'ユーザーを追加しました';
-        msg.className = 'msg success';
-        document.getElementById('addUserForm').reset();
-        loadUsers();
-      } catch (err) {
-        msg.textContent = err.message;
-        msg.className = 'msg';
-      }
-    };
-
-    // --- ユーザー一覧取得 ---
-    async function loadUsers() {
-      const table = document.querySelector('#usersTable tbody');
-      table.innerHTML = '';
-      try {
-        const res = await fetch('/api/users');
-        const users = await res.json();
-        Object.values(users).forEach(u => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${u.userId}</td>
-            <td>${u.type === 'admin' ? '管理者' : '保護者'}</td>
-            <td>${u.childId || ''}</td>
-          `;
-          table.appendChild(tr);
+    });
+}
+function addChild() {
+    const name = document.getElementById('newChildName').value.trim();
+    if (name) {
+        const id = 'child' + Date.now();
+        fetch(`${API}/children`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, id })
+        })
+        .then(() => {
+            document.getElementById('newChildName').value = '';
+            updateChildList();
+            updateChildSelect();
         });
-      } catch (e) {
-        table.innerHTML = `<tr><td colspan="3">取得失敗</td></tr>`;
-      }
     }
-
-    // 初回ロード
-    loadUsers();
-  </script>
+}
+function removeChild(childId) {
+    if (confirm('この児童を削除してもよろしいですか？')) {
+        fetch(`${API}/children/${childId}`, { method: 'DELETE' })
+        .then(() => {
+            updateChildList();
+            updateChildSelect();
+        });
+    }
+}
+function addUser() {
+    const userId = document.getElementById('newUserId').value.trim();
+    const password = document.getElementById('newUserPassword').value.trim();
+    const childId = document.getElementById('assignChild').value;
+    if (userId && password && childId) {
+        fetch(`${API}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, password, type: 'parent', childId })
+        })
+        .then(() => {
+            document.getElementById('newUserId').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('assignChild').value = '';
+            alert('ユーザーが追加されました');
+        });
+    }
+}
+function saveRecord() {
+    const childId = (currentUserObj.type === 'admin' && adminInputChildId)
+        ? adminInputChildId
+        : currentUserObj.childId;
+    const date = document.getElementById('recordDate').value;
+    const record = {
+        date,
+        morningTemp: document.getElementById('morningTemp').value,
+        eveningTemp: document.getElementById('eveningTemp').value,
+        bowelCount: document.getElementById('bowelCount').value,
+        urinationCount: document.getElementById('urinationCount').value,
+        breakfast: document.getElementById('breakfast').value,
+        lunch: document.getElementById('lunch').value,
+        dinner: document.getElementById('dinner').value,
+        medication: document.getElementById('medication').value,
+        toothBrush: document.getElementById('toothBrush').checked,
+        bath: document.getElementById('bath').checked,
+        clothesChange: document.getElementById('clothesChange').checked,
+        notes: document.getElementById('notes').value,
+        timestamp: new Date().toISOString()
+    };
+    fetch(`${API}/records/${childId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+    }).then(() => {
+        document.querySelectorAll('#parentScreen input, #parentScreen textarea').forEach(input => {
+            if (input.type === 'checkbox') input.checked = false;
+            else if (input.type !== 'date') input.value = '';
+        });
+        alert('記録が保存されました');
+        if (currentUserObj.type === 'admin' && adminInputChildId) {
+            loadRecordsFor(adminInputChildId);
+        } else {
+            loadRecords();
+        }
+    });
+}
+function saveReply(childId, date) {
+    const replyInput = document.getElementById(`replyInput-${date}`);
+    const reply = replyInput.value.trim();
+    if (reply !== '') {
+        fetch(`${API}/records/${childId}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, userId: currentUser, reply })
+        }).then(() => {
+            replyInput.value = '';
+            if (currentUserObj.type === 'admin' && adminInputChildId) {
+                loadRecordsFor(adminInputChildId);
+            } else {
+                loadRecords();
+            }
+        });
+    }
+}
+function loadRecords() {
+    fetch(`${API}/records/${currentUserObj.childId}`)
+    .then(res => res.json())
+    .then(records => _loadRecordsBase(currentUserObj.childId, records, false));
+}
+function loadRecordsFor(childId) {
+    fetch(`${API}/records/${childId}`)
+    .then(res => res.json())
+    .then(records => _loadRecordsBase(childId, records, true));
+}
+function _loadRecordsBase(childId, records, isAdminView) {
+    const recordsList = document.getElementById('recordsList');
+    recordsList.innerHTML = '';
+    if (records) {
+        const sortedDates = Object.keys(records).sort().reverse();
+        sortedDates.forEach(date => {
+            const record = records[date];
+            const item = document.createElement('div');
+            item.className = 'record-item';
+            let replySection = '';
+            const isAdmin = currentUserObj.type === 'admin';
+            if (!isAdmin || isAdminView) {
+                const currentReply = (record.reply && record.reply[currentUser]) || '';
+                replySection = `
+                    <div class="reply-section">
+                        <div class="reply-title">返信</div>
+                        <textarea id="replyInput-${date}" rows="2" placeholder="コメント・返信を入力">${currentReply}</textarea>
+                        <button class="btn btn-small" onclick="saveReply('${childId}','${date}')">送信</button>
+                    </div>
+                `;
+                if (record.reply) {
+                    Object.entries(record.reply).forEach(([uid, val]) => {
+                        if(uid !== currentUser)
+                        replySection += `<div class="reply-section"><div class="reply-title">他保護者の返信（${uid}）</div><div class="record-content">${val}</div></div>`;
+                    });
+                }
+            }
+            if (isAdmin && !isAdminView && record.reply) {
+                replySection = Object.entries(record.reply).map(([uid, val]) =>
+                    `<div class="reply-section"><div class="reply-title">返信（${uid}）</div><div class="record-content">${val}</div></div>`
+                ).join('');
+            }
+            item.innerHTML = `
+                <div class="record-date">${date}</div>
+                <div class="record-section">
+                    <h4>体温</h4>
+                    <div class="record-content">朝: ${record.morningTemp || '未記録'}℃ / 夜: ${record.eveningTemp || '未記録'}℃</div>
+                </div>
+                <div class="record-section">
+                    <h4>排便・排尿</h4>
+                    <div class="record-content">排便: ${record.bowelCount || 0}回 / 排尿: ${record.urinationCount || 0}回</div>
+                </div>
+                <div class="record-section">
+                    <h4>食事</h4>
+                    <div class="record-content">
+                        朝: ${record.breakfast || '記録なし'}<br>
+                        昼: ${record.lunch || '記録なし'}<br>
+                        夜: ${record.dinner || '記録なし'}
+                    </div>
+                </div>
+                <div class="record-section">
+                    <h4>ケア</h4>
+                    <div class="record-content">
+                        歯磨き: ${record.toothBrush ? '済' : '未実施'} / 
+                        入浴: ${record.bath ? '済' : '未実施'} / 
+                        着替え: ${record.clothesChange ? '済' : '未実施'}
+                    </div>
+                </div>
+                ${record.medication ? `<div class="record-section"><h4>服薬</h4><div class="record-content">${record.medication}</div></div>` : ''}
+                ${record.notes ? `<div class="record-section"><h4>連絡事項</h4><div class="record-content">${record.notes}</div></div>` : ''}
+                ${replySection}
+            `;
+            recordsList.appendChild(item);
+        });
+    }
+}
+function loadAllRecords() {
+    fetch(`${API}/children`)
+    .then(res => res.json())
+    .then(children => {
+        fetch(`${API}/records/all`)
+        .then(res => res.json())
+        .then(allRecords => {
+            const allRecordsList = document.getElementById('allRecordsList');
+            allRecordsList.innerHTML = '';
+            Object.keys(allRecords).forEach(childId => {
+                const childName = children[childId]?.name || '不明';
+                const childRecords = allRecords[childId];
+                const childSection = document.createElement('div');
+                childSection.innerHTML = `<h3>${childName}さんの記録</h3>`;
+                allRecordsList.appendChild(childSection);
+                const sortedDates = Object.keys(childRecords).sort().reverse();
+                sortedDates.forEach(date => {
+                    const record = childRecords[date];
+                    const item = document.createElement('div');
+                    item.className = 'record-item';
+                    let replySection = '';
+                    if (record.reply) {
+                        replySection = Object.entries(record.reply).map(([uid, val]) =>
+                            `<div class="reply-section"><div class="reply-title">返信（${uid}）</div><div class="record-content">${val}</div></div>`
+                        ).join('');
+                    }
+                    item.innerHTML = `
+                        <div class="record-date">${date}</div>
+                        <div class="record-section">
+                            <h4>体温</h4>
+                            <div class="record-content">朝: ${record.morningTemp || '未記録'}℃ / 夜: ${record.eveningTemp || '未記録'}℃</div>
+                        </div>
+                        <div class="record-section">
+                            <h4>排便・排尿</h4>
+                            <div class="record-content">排便: ${record.bowelCount || 0}回 / 排尿: ${record.urinationCount || 0}回</div>
+                        </div>
+                        <div class="record-section">
+                            <h4>食事</h4>
+                            <div class="record-content">
+                                朝: ${record.breakfast || '記録なし'}<br>
+                                昼: ${record.lunch || '記録なし'}<br>
+                                夜: ${record.dinner || '記録なし'}
+                            </div>
+                        </div>
+                        <div class="record-section">
+                            <h4>ケア</h4>
+                            <div class="record-content">
+                                歯磨き: ${record.toothBrush ? '済' : '未実施'} / 
+                                入浴: ${record.bath ? '済' : '未実施'} / 
+                                着替え: ${record.clothesChange ? '済' : '未実施'}
+                            </div>
+                        </div>
+                        ${record.medication ? `<div class="record-section"><h4>服薬</h4><div class="record-content">${record.medication}</div></div>` : ''}
+                        ${record.notes ? `<div class="record-section"><h4>連絡事項</h4><div class="record-content">${record.notes}</div></div>` : ''}
+                        ${replySection}
+                    `;
+                    allRecordsList.appendChild(item);
+                });
+            });
+        });
+    });
+}
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
+        login();
+    }
+});
+window.saveReply = saveReply;
+</script>
 </body>
 </html>
